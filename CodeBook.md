@@ -2,7 +2,7 @@ author: "Gene"
 date: "7/7/2020"
 
 '''{r}
-#Code Book
+# Code Book
 
 This book summarizes the steps completed to obtain the tidy data set, *Tidy_Data.txt*, for the Getting and Cleanng Data Course Project
 
