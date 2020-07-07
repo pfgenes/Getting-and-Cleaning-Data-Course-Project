@@ -32,7 +32,6 @@ names(y_data)<- "Activity"
 names(subj_data) <- "Subject"
 
 merged_data <- cbind(subj_data,x_data,y_data)
-names(merged_data)
 
 ## Extracts only the measurements on the mean and standard deviation for each measurement.
 #Load features.txt to understand rows aligned with mean and standard deviation
@@ -65,6 +64,4 @@ data_melted <- melt(merged_data_subset, id = c("Subject", "Activity"))
 Tidy_Data <- dcast(data_melted, Subject + Activity ~ variable, mean)
 
 write.table(Tidy_Data, file = "Tidy_Data.txt",row.name=FALSE)
-
-
 
