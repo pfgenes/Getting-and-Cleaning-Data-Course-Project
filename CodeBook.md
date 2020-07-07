@@ -1,86 +1,43 @@
----
-title: "CodeBook"
 author: "Gene"
 date: "7/7/2020"
-output: html_document
----
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 '''{r}
-## R Markdown
+#Code Book
 
-# Load dplyr
-library(dplyr)
+This book summarizes the steps completed to obtain the tidy data set, *Tidy_Data.txt*, for the Getting and Cleanng Data Course Project
 
-#Check if folder exists
-if(!file.exists("./data")){dir.create("./data")}
+## Processing Steps
 
-#download file and unzip
-fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-download.file(fileUrl,"./data/human_rec.zip", method="curl")
+**Step 1: Download and load files**
 
-if(!file.exists("UCI HAR Dataset")){
-	unzip("./data/human_rec.zip")
-	print("hi")
-}
+Download zip file from the appropriate url location and pull each txt file from the folder "UCI HAR Dataset" using read.table.
 
-#Load Training and test sets into R
-x_train <- read.table("./UCI HAR Dataset/train/X_train.txt")
-y_train <- read.table("./UCI HAR Dataset/train/y_train.txt")
-subj_train <- read.table("./UCI HAR Dataset/train/subject_train.txt")
-x_test <- read.table("./UCI HAR Dataset/test/X_test.txt")
-y_test <- read.table("./UCI HAR Dataset/test/y_test.txt")
-subj_test <- read.table("./UCI HAR Dataset/test/subject_test.txt")
-act_labels <- read.table("./UCI HAR Dataset/activity_labels.txt")
+**Step 2: Merges the training and the test sets.**
 
-## Merges the training and the test sets to create one data set.
-# first concatenate by rows 
-x_data <- rbind(x_train, x_test)
-y_data <- rbind(y_train, y_test)
-subj_data <- rbind(subj_train, subj_test)
+Create one data set including subject (*subj_train* & *subj_test*), activity (*y_train* and *y_test*) and features (*x_train* and *t_test*) data with cbind and rbind.  This results in a full data set, *merged_data*.
 
-#Rename y_data and subj_data column names to avoid confusion
-names(y_data)<- "Activity"
-names(subj_data) <- "Subject"
+**Step 3: Extracts the features for only the measurements on the mean and standard deviation for each measurement.**
 
-merged_data <- cbind(subj_data,x_data,y_data)
-names(merged_data)
+Use the grepl function to search the features.txt file (loaded as a data frame, *features*) for mean and standard deviation (std) resulting in features_mean_std. 
 
-## Extracts only the measurements on the mean and standard deviation for each measurement.
-#Load features.txt to understand rows aligned with mean and standard deviation
-features <- read.table("./UCI HAR Dataset/features.txt")
+**Step 4: Apply new names to the columns of the merged_data data frame**
 
-#change V2 column from factor variable to character
-features[,2]<- as.character(features[,2])
+The subset of the features table and the name "Subject" and "Activity" are then used to create a vector, *chosen columns*, with the column names. Those column names are assigned to the merged_data names.
 
-#subset rows from features to select only those with "mean" or "std"
-features_mean_std <- grepl("mean|std", features[,2])
-features_V1 <- paste0("V",features$V1[features_mean_std])
-chosen_columns <- c("Subject",features_V1,"Activity")
+**Step 5: Extract from the data frame, data that only includes the mean and standard deviation**
 
-merged_data_subset <- subset(merged_data, select = chosen_columns)
+*Features_mean_std* is used to subset the merged_data to only include the mean and standard deviation values in *merged_data_subset*.
 
-#Update names of columns to be descriptive
-descriptive_names <- features$V2[features_mean_std]
-names(merged_data_subset) <- c("Subject",descriptive_names,"Activity")
+**Step 6: Appropriately labels the data set with descriptive variable names.**
 
-#Use descriptive activity names to name the activities in the data set
-merged_data_subset$Activity <- act_labels[merged_data_subset$Activity, 2]
+The descriptions from features are then used to rename the columns in the *merged_data_subset* to be more descriptive. The gsub function is used to clarify the shorthand that was used for time (t) and frequency (f).
 
-#update t and f to appropriate description
-names(merged_data_subset)<-gsub("^t", "time", names(merged_data_subset))
-names(merged_data_subset)<-gsub("^f", "frequency", names(merged_data_subset))
+**Step 7: Use descriptive activity names to name the activities in the data set**
 
-#New Data set
-library(reshape2)
-data_melted <- melt(merged_data_subset, id = c("Subject", "Activity"))
-Tidy_Data <- dcast(data_melted, Subject + Activity ~ variable, mean)
+The activity_labels.txt file (loaded as *act_labels* data frame) is then used to assign descriptive names to the Activity variable.
 
-write.table(Tidy_Data, file = "Tidy_Data.txt",row.name=FALSE)
+**Step 8: Create a second, independent tidy data set with the average of each variable for each activity and each subject **
 
-library(knitr)
-knit2html("./data/codebook.md")
-
+The *Tidy_data* data frame is then created by grouping by subject and activity and calculating the mean for each. 
+It is then exported to *Tidy_Data.txt*.
 '''
