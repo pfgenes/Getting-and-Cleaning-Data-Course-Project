@@ -36,7 +36,7 @@ The descriptions from features are then used to rename the columns in the *merge
 
 The activity_labels.txt file (loaded as *act_labels* data frame) is then used to assign descriptive names to the Activity variable.
 
-**Step 8: Create a second, independent tidy data set with the average of each variable for each activity and each subject **
+**Step 8: Create a second, independent tidy data set with the average of each variable for each activity and each subject**
 
 The *Tidy_data* data frame is then created by grouping by subject and activity and calculating the mean for each. 
 It is then exported to *Tidy_Data.txt*.
