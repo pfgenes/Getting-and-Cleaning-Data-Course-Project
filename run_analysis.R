@@ -10,7 +10,6 @@ download.file(fileUrl,"./data/human_rec.zip", method="curl")
 
 if(!file.exists("UCI HAR Dataset")){
 	unzip("./data/human_rec.zip")
-	print("hi")
 }
 
 #Load Training and test sets into R
